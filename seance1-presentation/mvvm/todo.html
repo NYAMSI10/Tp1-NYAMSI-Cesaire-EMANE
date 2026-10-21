@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>MVVM – Todo-list</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 480px;
+        margin: 40px auto;
+      }
+      .done {
+        text-decoration: line-through;
+        color: #888;
+      }
+      .error {
+        color: #c8483f;
+      }
+      li {
+        margin: 6px 0;
+      }
+      .actif {
+        background: #f5c542;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Todo-list (MVVM)</h1>
+    <div id="app">
+      <form>
+        <input placeholder="Nouvelle tâche" autofocus /> <button>Ajouter</button>
+      </form>
+      <p>
+        <button data-filtre="toutes">Toutes</button>
+        <button data-filtre="faites">Faites</button>
+        <button data-filtre="a-faire">À faire</button>
+      </p>
+      <p class="error"></p>
+      <ul></ul>
+      <p class="counter"></p>
+    </div>
+    <script type="module">
+      import { TodoViewModel } from './TodoViewModel.js';
+      const vm = new TodoViewModel();
+      const app = document.getElementById('app');
+      const form = app.querySelector('form');
+      const titre = form.querySelector('input');
+      const liste = app.querySelector('ul');
+      const erreur = app.querySelector('.error');
+      const compteur = app.querySelector('.counter');
+      const boutons = app.querySelectorAll('[data-filtre]');
+
+      form.onsubmit = e => {
+        e.preventDefault();
+        vm.ajouter(titre.value);
+        titre.value = '';
+      };
+      boutons.forEach(b => (b.onclick = () => vm.changerFiltre(b.dataset.filtre)));
+
+      vm.erreur.subscribe(msg => (erreur.textContent = msg));
+      vm.restantes.subscribe(n => (compteur.textContent = `${n} tâche(s) à faire`));
+      vm.filtre.subscribe(nom => boutons.forEach(b => b.classList.toggle('actif', b.dataset.filtre === nom)));
+      vm.visibles.subscribe(todos => {
+        liste.innerHTML = '';
+        for (const t of todos) {
+          const li = document.createElement('li');
+          const label = document.createElement('label');
+          const coche = document.createElement('input');
+          coche.type = 'checkbox';
+          coche.checked = t.done;
+          coche.onchange = () => vm.basculer(t.id);
+          const span = document.createElement('span');
+          span.className = t.done ? 'done' : '';
+          span.textContent = t.title;
+          const suppr = document.createElement('button');
+          suppr.textContent = '✕';
+          suppr.onclick = () => vm.supprimer(t.id);
+          label.append(coche, ' ', span);
+          li.append(label, ' ', suppr);
+          liste.append(li);
+        }
+      });
+    </script>
+  </body>
+</html>

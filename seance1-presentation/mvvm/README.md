@@ -1,0 +1,6 @@
+# TP 1 · Todo-list : MVC puis MVVM
+
+- **Logique du filtre** : en MVC, la règle de filtrage est dans le Model (`filtrer`, `restantes`) et c'est le Controller qui mémorise le filtre courant et redemande la liste à afficher. En MVVM, la règle reste dans le Model, mais c'est le ViewModel qui porte le filtre courant (`filtre` observable) et recalcule `visibles` / `restantes`.
+- **Testé sans navigateur** : en MVC, seul le Model est testable (le Controller et la View dépendent du DOM). En MVVM, on teste en plus tout le comportement de l'écran via le ViewModel : ajout, erreur, filtre, compteur.
+- **Fichiers modifiés pour le filtre en MVC** : 5 fichiers dans `mvc/` — `index.html` (boutons et style), `TodoModel.js`, `TodoView.js`, `TodoController.js` et `TodoModel.test.js`. Une seule fonctionnalité touche les trois rôles.
+- **Tableau de bord QueenBee temps réel** : MVVM. Les mesures arrivent en continu ; il suffit de mettre à jour les observables du ViewModel et la vue suit automatiquement grâce aux liaisons, sans Controller pour orchestrer chaque rafraîchissement. Le ViewModel (seuils, agrégats, alertes) se teste sans navigateur, et c'est le modèle des frameworks actuels (signals d'Angular, `ref()` de Vue).
